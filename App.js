@@ -10,6 +10,7 @@ import {
 import ListCounter from "./components/ListCounter";
 import ShoppingListPopup from "./components/ShoppingListPopup";
 import ShoppingListItem from "./components/ShoppingListItem";
+import { getShoppingList, storeShoppingList } from "./localStorage";
 
 export default function App() {
   const [shoppintListItems, setShoppingListItems] = useState([]);
@@ -20,14 +21,30 @@ export default function App() {
       ...shoppintListItems,
       { id: Math.random().toString(), value: item },
     ];
-    console.log("new item to add: ", item);
+    console.log("new ,item to add: ", item);
     setShoppingListItems(newItems);
+    storeShoppingList(newItems);
   };
 
   const deleteFromShoppingList = (itemId) => {
     const newItems = shoppintListItems.filter((item) => item.id !== itemId);
     setShoppingListItems(newItems);
+    storeShoppingList(newItems);
   };
+
+  const loadShoppingList = async () => {
+    const shoppingList = await getShoppingList();
+    if (shoppingList) {
+      setShoppingListItems(shoppingList);
+      console.log("shoppingList was restored from localStorage");
+    }
+  };
+
+  // useEffect will be called when the app starts
+  useEffect(() => {
+    loadShoppingList();
+    // empty dependency array means that the effect will only run once: when the component mounts
+  }, []);
 
   return (
     <View style={styles.container}>
